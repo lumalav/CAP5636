@@ -12,7 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-import mdp, util
+import mdp, util, json
 
 from learningAgents import ValueEstimationAgent
 
@@ -43,9 +43,10 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
 
-        # Write value iteration code here
-        "*** YOUR CODE HERE ***"
-
+        for copy in [self.values.copy() for _ in range(self.iterations)]:
+            for s in [s for s in mdp.getStates() if not mdp.isTerminal(s)]:
+                copy[s] = self.__computeActionFromValues(s)[1] #the value of the best possible action
+            self.values = copy
 
     def getValue(self, state):
         """
@@ -59,8 +60,16 @@ class ValueIterationAgent(ValueEstimationAgent):
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        """
+            Explanation: to calculate QValue we need to calculate the weighted
+            sum that results from multiplying each probability times the sum of
+            the discount times the value of the ending state (s') plus the reward received
+            by transitioning to that state (s')
+        """
+        return sum(list(map(lambda stateAndProb: 
+            stateAndProb[1] * (self.discount * self.getValue(stateAndProb[0]) 
+            + self.mdp.getReward(state, action, stateAndProb[0]))
+            , self.mdp.getTransitionStatesAndProbs(state, action))))
 
     def computeActionFromValues(self, state):
         """
@@ -71,8 +80,36 @@ class ValueIterationAgent(ValueEstimationAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return None.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.mdp.isTerminal(state):
+            return None
+
+        #The action is located in the first position of the tuple
+        if self.mdp.isTerminal(state):
+            return None
+
+        return sorted(
+            list(
+                map(
+                    lambda action: (action, self.getQValue(state, action)), self.mdp.getPossibleActions(state))
+                    ), 
+                key=lambda tuple: tuple[1]
+                )[-1][0]
+
+    def __computeActionFromValues(self, state):
+        """
+            Computes the action from the values and returns a tuple
+            with the action and its value
+        """
+        if self.mdp.isTerminal(state):
+            return None
+
+        return sorted(
+            list(
+                map(
+                    lambda action: (action, self.getQValue(state, action)), self.mdp.getPossibleActions(state))
+                    ), 
+                key=lambda tuple: tuple[1]
+                )[-1]
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
