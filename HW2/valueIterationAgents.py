@@ -80,29 +80,21 @@ class ValueIterationAgent(ValueEstimationAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return None.
         """
+        """
+          Explanation:
+          to compute the action we need to get Qvalue of every possible action and return
+          the highest one
+        """
         if self.mdp.isTerminal(state):
             return None
 
-        #The action is located in the first position of the tuple
-        if self.mdp.isTerminal(state):
-            return None
-
-        return sorted(
-            list(
-                map(
-                    lambda action: (action, self.getQValue(state, action)), self.mdp.getPossibleActions(state))
-                    ), 
-                key=lambda tuple: tuple[1]
-                )[-1][0]
+        return self.__computeActionFromValues(state)[0]
 
     def __computeActionFromValues(self, state):
         """
             Computes the action from the values and returns a tuple
             with the action and its value
         """
-        if self.mdp.isTerminal(state):
-            return None
-
         return sorted(
             list(
                 map(
