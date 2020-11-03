@@ -41,11 +41,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.mdp = mdp
         self.discount = discount
         self.iterations = iterations
-        self.values = util.Counter() # A Counter is a dict with default 0
+        self.values = util.Counter()
 
         for copy in [self.values.copy() for _ in range(self.iterations)]:
             for s in [s for s in mdp.getStates() if not mdp.isTerminal(s)]:
-                copy[s] = self.__computeActionFromValues(s)[1] #the value of the best possible action
+                copy[s] = self.__computeActionsAndQValues(s)[1] #the value of the best possible action
             self.values = copy
 
     def getValue(self, state):
@@ -88,12 +88,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         if self.mdp.isTerminal(state):
             return None
 
-        return self.__computeActionFromValues(state)[0]
+        return self.__computeActionsAndQValues(state)[0]
 
-    def __computeActionFromValues(self, state):
+    def __computeActionsAndQValues(self, state):
         """
-            Computes the action from the values and returns a tuple
-            with the action and its value
+            Returns a tuple of the best possible action and its qValue
         """
         return sorted(
             list(
