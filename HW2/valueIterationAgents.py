@@ -42,18 +42,29 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.discount = discount
         self.iterations = iterations
         self.values = util.Counter()
-
+        leftCornerValues = []
         for copy in [self.values.copy() for _ in range(self.iterations)]:
             for s in [s for s in mdp.getStates() if not mdp.isTerminal(s)]:
                 copy[s] = self.__computeActionsAndQValues(s)[1] #the value of the best possible action
+                if s == (0,2):
+                    leftCornerValues.append(copy[s])
             self.values = copy
+
+        drawEvolutionOfVOnTopLeftCorner = False #set to 'True' to test Step-2
+
+        if drawEvolutionOfVOnTopLeftCorner:
+            import matplotlib.pyplot as plt;
+            plt.plot(leftCornerValues)
+            plt.title('evolution of the V value in the upper-left corner after ' + str(self.iterations) + ' iterations')
+            plt.ylabel('V Value')
+            plt.xlabel('Iteration')
+            plt.show()
 
     def getValue(self, state):
         """
           Return the value of the state (computed in __init__).
         """
         return self.values[state]
-
 
     def computeQValueFromValues(self, state, action):
         """

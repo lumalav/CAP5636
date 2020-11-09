@@ -343,6 +343,8 @@ def runEpisode(agent, environment, discount, decision, display, message, pause, 
     environment.reset()
     if 'startEpisode' in dir(agent): agent.startEpisode()
     message("BEGINNING EPISODE: "+str(episode)+"\n")
+
+    stateAndValues = -1
     while True:
 
         # DISPLAY CURRENT STATE
@@ -354,7 +356,7 @@ def runEpisode(agent, environment, discount, decision, display, message, pause, 
         actions = environment.getPossibleActions(state)
         if len(actions) == 0:
             message("EPISODE "+str(episode)+" COMPLETE: RETURN WAS "+str(returns)+"\n")
-            return returns
+            return (returns, stateAndValues)
 
         # GET ACTION (USUALLY FROM AGENT)
         action = decision(state)
@@ -368,13 +370,20 @@ def runEpisode(agent, environment, discount, decision, display, message, pause, 
                 "\nEnded in state: "+str(nextState)+
                 "\nGot reward: "+str(reward)+"\n")
         # UPDATE LEARNER
+
+        val = -1
         if 'observeTransition' in dir(agent):
-            agent.observeTransition(state, action, nextState, reward)
+           val = agent.observeTransition(state, action, nextState, reward)
+
+        if state == (2,2):
+            stateAndValues = [0,val,0,0]
 
         returns += reward * totalDiscount
         totalDiscount *= discount
+        
 
     if 'stopEpisode' in dir(agent):
+        
         agent.stopEpisode()
 
 def parseOptions():
@@ -566,8 +575,37 @@ if __name__ == '__main__':
         print "RUNNING", opts.episodes, "EPISODES"
         print
     returns = 0
+    l = []
     for episode in range(1, opts.episodes+1):
-        returns += runEpisode(a, env, opts.discount, decisionCallback, displayCallback, messageCallback, pauseCallback, episode)
+        tuple = runEpisode(a, env, opts.discount, decisionCallback, displayCallback, messageCallback, pauseCallback, episode)
+        returns += tuple[0]
+        l.append(tuple[1])
+
+    print 'aqui -> {0}'.format(l)
+    north = []
+    east = []
+    south = []
+    west = []
+    v = 0
+    for a in l:
+        if a == -1:
+            v += 1
+        else:
+            north.append(a[0])
+            east.append(a[1])
+            south.append(a[2])
+            west.append(a[3])
+
+    l = [{ 'a': north, 'b': 'north'}, { 'a': east, 'b': 'east'}, {'a':south, 'b': 'south'}, {'a': west, 'b': 'west'}]
+    import matplotlib.pyplot as plt;
+    for a in l:
+        plt.plot(a['a'], label=a['b'])
+    plt.legend(loc='upper left')
+    plt.title('evolution of the four state action (Q) values for the state (2,2) after ' + str(opts.episodes) + ' episodes')
+    plt.ylabel('Q Value')
+    plt.xlabel('Episode')
+    plt.show()
+    
     if opts.episodes > 0:
         print
         print "AVERAGE RETURNS FROM START STATE: "+str((returns+0.0) / opts.episodes)

@@ -130,7 +130,7 @@ class ReinforcementAgent(ValueEstimationAgent):
             NOTE: Do *not* override or call this function
         """
         self.episodeRewards += deltaReward
-        self.update(state,action,nextState,deltaReward)
+        return self.update(state,action,nextState,deltaReward)
 
     def startEpisode(self):
         """

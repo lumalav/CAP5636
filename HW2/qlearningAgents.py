@@ -114,7 +114,11 @@ class QLearningAgent(ReinforcementAgent):
         finalReward =  self.computeValueFromQValues(nextState) * (self.discount + reward) if any(self.getLegalActions(nextState)) else reward
         currentQValue = self.getQValue(state, action)
         #updatedQValue => currentQValue + learning rate * (finalReward - currentQValue)
-        self.allQValues[(state, action)] = currentQValue + (self.alpha * (finalReward - currentQValue))
+        value = currentQValue + (self.alpha * (finalReward - currentQValue))
+
+        self.allQValues[(state, action)] = value
+
+        return value
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
