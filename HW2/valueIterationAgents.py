@@ -58,7 +58,7 @@ class ValueIterationAgent(ValueEstimationAgent):
             plt.title('evolution of the V value in the upper-left corner after ' + str(self.iterations) + ' iterations')
             plt.ylabel('V Value')
             plt.xlabel('Iteration')
-            plt.show()
+            plt.show(block=False);
 
     def getValue(self, state):
         """
