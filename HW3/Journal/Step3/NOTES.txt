@@ -1,0 +1,40 @@
+Notes:
+
+#trial 1:
+Since the simple-no-dropout example is the one with better accuracy among the ones given, The first model that I tried consist of a similar one with three convolutional layers 
+with a max pool layer in each of them. I also added a 128 units connected layer on top of it instead of the 512 one. The first layer uses a linear activation function while the rest use 
+rectified linear function. Training took about 4 seconds/epoch on my current system and results were slightly better than the simple-no-dropout-example.
+Blue Line -> Images: 001-Trial1Loss-my-network-1.jpg, 002-Trial1Accuracy-my-network-1.jpg
+
+#trial 2:
+I tried using the same model from before, but using an exponential activation function on the layers. Unsurprisingly, results are much worse than any other model with an accuracy of about
+30%. 
+Red Line -> Images: 003-Trial2Loss-my-network-2.jpg, 004-Trial2Accuracy-my-network-2.jpg
+
+#trial 3
+Same as before, but with linear activation functions in all of them. Results are pretty close to trial 1. But, since this one seems simpler, I'll replace my-network-1 with this model.
+Red Line -> Images: 005-Trial3Loss-my-network-2.jpg, 006-Trial3Accuracy-my-network-2.jpg
+
+#trial 4
+Same as before, but reintroducing a 10% of dropout. my-network-2 looks better than my-network-1 during the epochs. However, at the end, it converges to a slightly lower accuracy on the last
+epoch. Overall, it looks more stable than the other one since it has a lower loss. 
+Red line -> Images: 007-Trial4Loss-my-network-2.jpg, 008-Trial4Accuracy-my-network-2.jpg
+
+#trial 5
+Took the same model and added BatchNormalization to every MaxPooling2D layer. Accuracy seemed good. However, val_loss was too high and val_accuracy is significantly different than accuracy suggesting overfitting. It took around 10 seconds
+per epoch to train (almost double than previous models). 
+Green line -> Images: 009-Trial5Loss-my-network-3.jpg, 010-Trial5Accuracy-my-network-3.jpg
+
+#trial 6
+For this trial, I took the last working model and changed the optimizer to use 'nadam'. It significantly further improved the results with perfect accuracy after the eight epoch. val_accuracy reflected this change and 
+loss and val_loss dropped faster than before. This became the top model.
+Green line -> Images: 011-Trial6Loss-my-network-3.jpg, 012-Trial6Accuracy-my-network-3.jpg
+
+The final result is documented in the following images
+013-Top3vsExamplesLoss.jpg
+014-Top3vsExamplesAccuracy.jpg
+
+
+
+
+
